@@ -1,0 +1,289 @@
+%% Loading image into the workspace 
+
+im = dicomread('T2W_Brain.dcm')
+figure,imagesc(im),colorbar,colormap(gray),grid on,title('T2W image of brain - no operation')
+im = double(im);
+A = double(im-min(im(:)));
+B = double(max(im(:))-min(im(:)));
+normalized_image =(double(A/B)); 
+figure,imagesc(255*normalized_image),colorbar,colormap(gray),grid on,title('Normalized Image-scaled 0-255')
+conv_normalized_image = uint8(normalized_image);%converted to uint8
+ 
+%random noise
+noise = rand(size(normalized_image,1),size(normalized_image,2));
+noise1 = 0.5*(max(normalized_image(:)))*noise;
+noise1_img = normalized_image + noise1;
+figure,imagesc(noise1_img),colorbar,colormap(gray),grid on,title('Noisy Image - Random Noise') 
+figure, imhist(normalized_image),title('Histogram - normalized image')
+figure, imhist(noise1_img),title('Histogram - Noisy Image')
+ 
+%gaussian noise
+noise6 = imnoise(normalized_image,'gaussian',0,0.01);
+noise7 = imnoise(normalized_image,'gaussian',0,0.025);
+noise8 = imnoise(normalized_image,'gaussian',0,0.05);
+ 
+figure,imagesc(noise6),colorbar,colormap(gray),grid on,title('Gaussian m=0 var=0.01')
+figure,imagesc(noise7),colorbar,colormap(gray),grid on,title('Gaussian m=0 var=0.025')
+figure,imagesc(noise8),colorbar,colormap(gray),grid on,title('Gaussian m=0 var=0.05')
+ 
+%% Gaussian Noise filter using mean filter
+ 
+%kernel size 3x3
+meanfilt3g = fspecial('average',3);
+img_meanfilt3g1 = imfilter(noise6,meanfilt3g);%mean filter on gaussian noise with Var=0.01
+img_meanfilt3g2 = imfilter(noise7,meanfilt3g);%mean filter on gaussian noise noise with Var=0.025
+img_meanfilt3g3 = imfilter(noise8,meanfilt3g);%mean filter on gaussian noise noise with Var=0.05
+ 
+figure,imagesc(img_meanfilt3g1),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-mean-3x3-var=0.01')
+figure,imagesc(img_meanfilt3g2),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-mean-3x3-var=0.025')
+figure,imagesc(img_meanfilt3g3),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-mean-3x3-var=0.05')
+ 
+%kernel size 9x9
+ 
+meanfilt9g = fspecial('average',9);
+img_meanfilt9g1 = imfilter(noise6,meanfilt9g);%mean filter on gaussian noise with Var=0.01
+img_meanfilt9g2 = imfilter(noise7,meanfilt9g);%mean filter on gaussian noise noise with Var=0.025
+img_meanfilt9g3 = imfilter(noise8,meanfilt9g);%mean filter on gaussian noise noise with Var=0.05
+ 
+figure,imagesc(img_meanfilt9g1),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-mean-9x9-var=0.01')
+figure,imagesc(img_meanfilt9g2),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-mean-9x9-var=0.025')
+figure,imagesc(img_meanfilt9g3),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-mean-9x9-var=0.05')
+ 
+%kernel size 15x15
+ 
+meanfilt15g = fspecial('average',15);
+img_meanfilt15g1 = imfilter(noise6,meanfilt15g);%mean filter on gaussian noise with Var=0.01
+img_meanfilt15g2 = imfilter(noise7,meanfilt15g);%mean filter on gaussian noise noise with Var=0.025
+img_meanfilt15g3 = imfilter(noise8,meanfilt15g);%mean filter on gaussian noise noise with Var=0.05
+ 
+figure,imagesc(img_meanfilt15g1),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-mean-15x15-var=0.01')
+figure,imagesc(img_meanfilt15g2),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-mean-15x15-var=0.025')
+figure,imagesc(img_meanfilt15g3),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-mean-15x15-var=0.05')
+ 
+%Gaussian Noise filter using median filter
+ 
+medianFilt3g1 = medfilt2(noise6,[3 3]);
+medianFilt3g2 = medfilt2(noise7,[3 3]);
+medianFilt3g3 = medfilt2(noise8,[3 3]);
+figure,imagesc(medianFilt3g1),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-median-3x3-var=0.01')
+figure,imagesc(medianFilt3g2),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-median-3x3-var=0.025')
+figure,imagesc(medianFilt3g3),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-median-3x3-var=0.05')
+ 
+medianFilt9g1 = medfilt2(noise6,[9 9]);
+medianFilt9g2 = medfilt2(noise7,[9 9]);
+medianFilt9g3 = medfilt2(noise8,[9 9]);
+figure,imagesc(medianFilt9g1),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-median-9x9-var=0.01')
+figure,imagesc(medianFilt9g2),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-median-9x9-var=0.025')
+figure,imagesc(medianFilt9g3),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-median-9x9-var=0.05')
+ 
+medianFilt15g1 = medfilt2(noise6,[15 15]);
+medianFilt15g2 = medfilt2(noise7,[15 15]);
+medianFilt15g3 = medfilt2(noise8,[15 15]);
+figure,imagesc(medianFilt15g1),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-median-15x15-var=0.01')
+figure,imagesc(medianFilt15g2),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-median-15x15-var=0.025')
+figure,imagesc(medianFilt15g3),colorbar,colormap(gray),grid on,title('Gaussian-Filtered-median-15x15-var=0.05')
+ 
+ 
+%Gaussian Noise filter using Gaussian filter
+ 
+%kernel = 3x3
+gaussfilt3g1 = fspecial('gaussian',3,0.25);%3x3 matrix with SD = 0.25
+gaussfilt3g2 = fspecial('gaussian',3,0.5);%3x3 matrix with SD = 0.5
+img_gaussfilt3g1 = imfilter(noise6,gaussfilt3g1);%SD = 0.25 variance = 0.01
+img_gaussfilt3g2 = imfilter(noise7,gaussfilt3g1);%SD = 0.25 variance = 0.025
+img_gaussfilt3g3 = imfilter(noise8,gaussfilt3g1);%SD = 0.25 variance = 0.05
+ 
+img_gaussfilt3g4 = imfilter(noise6,gaussfilt3g2);%SD = 0.5 variance = 0.01
+img_gaussfilt3g5 = imfilter(noise7,gaussfilt3g2);%SD = 0.5 variance = 0.025
+img_gaussfilt3g6 = imfilter(noise8,gaussfilt3g2);%SD = 0.5 variance = 0.05
+ 
+figure,imagesc(img_gaussfilt3g1),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.01-Filtered-gaussian-3x3-SD=0.25')
+figure,imagesc(img_gaussfilt3g2),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.025-Filtered-gaussian-3x3-SD=0.25')
+figure,imagesc(img_gaussfilt3g3),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.05-Filtered-gaussian-3x3-SD=0.25')
+figure,imagesc(img_gaussfilt3g4),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.01-Filtered-gaussian-3x3-SD=0.5')
+figure,imagesc(img_gaussfilt3g5),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.025-Filtered-gaussian-3x3-SD=0.5')
+figure,imagesc(img_gaussfilt3g6),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.05-Filtered-gaussian-3x3-SD=0.5')
+ 
+%kernel = 9x9
+gaussfilt9g1 = fspecial('gaussian',9,0.25);%9x9 matrix with SD = 0.25
+gaussfilt9g2 = fspecial('gaussian',9,0.5);%9x9 matrix with SD = 0.5
+img_gaussfilt9g1 = imfilter(noise6,gaussfilt9g1);%SD = 0.25 variance = 0.01
+img_gaussfilt9g2 = imfilter(noise7,gaussfilt9g1);%SD = 0.25 variance = 0.025
+img_gaussfilt9g3 = imfilter(noise8,gaussfilt9g1);%SD = 0.25 variance = 0.05
+ 
+img_gaussfilt9g4 = imfilter(noise6,gaussfilt9g2);%SD = 0.5 variance = 0.01
+img_gaussfilt9g5 = imfilter(noise7,gaussfilt9g2);%SD = 0.5 variance = 0.025
+img_gaussfilt9g6 = imfilter(noise8,gaussfilt9g2);%SD = 0.5 variance = 0.05
+ 
+figure,imagesc(img_gaussfilt9g1),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.01-Filtered-gaussian-9x9-SD=0.25')
+figure,imagesc(img_gaussfilt9g2),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.025-Filtered-gaussian-9x9-SD=0.25')
+figure,imagesc(img_gaussfilt9g3),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.05-Filtered-gaussian-9x9-SD=0.25')
+figure,imagesc(img_gaussfilt9g4),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.01-Filtered-gaussian-9x9-SD=0.5')
+figure,imagesc(img_gaussfilt9g5),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.025-Filtered-gaussian-9x9-SD=0.5')
+figure,imagesc(img_gaussfilt9g6),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.05-Filtered-gaussian-9x9-SD=0.5')
+ 
+ 
+%kernel = 15x15
+gaussfilt15g1 = fspecial('gaussian',15,0.25);%15x15 matrix with SD = 0.25
+gaussfilt15g2 = fspecial('gaussian',15,0.5);%15x15 matrix with SD = 0.5
+img_gaussfilt15g1 = imfilter(noise6,gaussfilt15g1);%SD = 0.25 variance = 0.01
+img_gaussfilt15g2 = imfilter(noise7,gaussfilt15g1);%SD = 0.25 variance = 0.025
+img_gaussfilt15g3 = imfilter(noise8,gaussfilt15g1);%SD = 0.25 variance = 0.05
+ 
+img_gaussfilt15g4 = imfilter(noise6,gaussfilt15g2);%SD = 0.5 variance = 0.01
+img_gaussfilt15g5 = imfilter(noise7,gaussfilt15g2);%SD = 0.5 variance = 0.025
+img_gaussfilt15g6 = imfilter(noise8,gaussfilt15g2);%SD = 0.5 variance = 0.05
+ 
+figure,imagesc(img_gaussfilt15g1),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.01-Filtered-gaussian-15x15-SD=0.25')
+figure,imagesc(img_gaussfilt15g2),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.025-Filtered-gaussian-15x15-SD=0.25')
+figure,imagesc(img_gaussfilt15g3),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.05-Filtered-gaussian-15x15-SD=0.25')
+figure,imagesc(img_gaussfilt15g4),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.01-Filtered-gaussian-15x15-SD=0.5')
+figure,imagesc(img_gaussfilt15g5),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.025-Filtered-gaussian-15x15-SD=0.5')
+figure,imagesc(img_gaussfilt15g6),colorbar,colormap(gray),grid on,title('Gaussian-variance=0.05-Filtered-gaussian-15x15-SD=0.5')
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+%salt & pepper noise
+ 
+noise3 = imnoise(normalized_image,'salt & pepper',0.01);%density d = 0.01
+noise4 = imnoise(normalized_image,'salt & pepper',0.05);%density d = 0.05
+noise5 = imnoise(normalized_image,'salt & pepper',0.08);%density d = 0.08
+figure,imagesc(noise3),colorbar,colormap(gray),grid on,title('S&P density 0.01')
+figure,imagesc(noise4),colorbar,colormap(gray),grid on,title('S&P density 0.05')
+figure,imagesc(noise5),colorbar,colormap(gray),grid on,title('S&P density 0.08')
+ 
+ 
+%%Salt & Pepper noise filter using mean filter
+ 
+%kernel size 3x3
+ 
+meanfilt3s = fspecial('average',3);
+img_meanfilt3s1 = imfilter(noise3,meanfilt3s);%mean filter on salt & pepper noise with d=0.01
+img_meanfilt3s2 = imfilter(noise4,meanfilt3s);%mean filter on salt & pepper noise with d=0.05
+img_meanfilt3s3 = imfilter(noise5,meanfilt3s);%mean filter on salt & pepper noise with d=0.08
+ 
+figure,imagesc(img_meanfilt3s1),colorbar,colormap(gray),grid on,title('S&P-Filtered-mean-3x3-d=0.01')
+figure,imagesc(img_meanfilt3s2),colorbar,colormap(gray),grid on,title('S&P-Filtered-mean-3x3-d=0.05')
+figure,imagesc(img_meanfilt3s3),colorbar,colormap(gray),grid on,title('S&P-Filtered-mean-3x3-d=0.08')
+ 
+%kernel size 9x9
+ 
+meanfilt9s = fspecial('average',9);
+img_meanfilt9s1 = imfilter(noise3,meanfilt9s);%mean filter on salt & pepper noise with d=0.01
+img_meanfilt9s2 = imfilter(noise4,meanfilt9s);%mean filter on salt & pepper noise with d=0.05
+img_meanfilt9s3 = imfilter(noise5,meanfilt9s);%mean filter on salt & pepper noise with d=0.08
+ 
+figure,imagesc(img_meanfilt9s1),colorbar,colormap(gray),grid on,title('S&P-Filtered-mean-9x9-d=0.01')
+figure,imagesc(img_meanfilt9s2),colorbar,colormap(gray),grid on,title('S&P-Filtered-mean-9x9-d=0.05')
+figure,imagesc(img_meanfilt9s3),colorbar,colormap(gray),grid on,title('S&P-Filtered-mean-9x9-d=0.08')
+ 
+%kernel size 15x15
+ 
+meanfilt15s = fspecial('average',15);
+img_meanfilt15s1 = imfilter(noise3,meanfilt15s);%mean filter on salt & pepper noise with d=0.01
+img_meanfilt15s2 = imfilter(noise4,meanfilt15s);%mean filter on salt & pepper noise with d=0.05
+img_meanfilt15s3 = imfilter(noise5,meanfilt15s);%mean filter on salt & pepper noise with d=0.08
+ 
+figure,imagesc(img_meanfilt15s1),colorbar,colormap(gray),grid on,title('S&P-Filtered-mean-15x15-d=0.01')
+figure,imagesc(img_meanfilt15s2),colorbar,colormap(gray),grid on,title('S&P-Filtered-mean-15x15-d=0.05')
+figure,imagesc(img_meanfilt15s3),colorbar,colormap(gray),grid on,title('S&P-Filtered-mean-15x15-d=0.08')
+ 
+ 
+%%Salt & Pepper noise filter using median filter 
+ 
+%Kernel size 3x3
+ 
+medianFilt3s1 = medfilt2(noise3,[3 3]);
+medianFilt3s2 = medfilt2(noise4,[3 3]);
+medianFilt3s3 = medfilt2(noise5,[3 3]);
+figure,imagesc(medianFilt3s1),colorbar,colormap(gray),grid on,title('S&P-Filtered-median-3x3-d=0.01')
+figure,imagesc(medianFilt3s2),colorbar,colormap(gray),grid on,title('S&P-Filtered-median-3x3-d=0.05')
+figure,imagesc(medianFilt3s3),colorbar,colormap(gray),grid on,title('S&P-Filtered-median-3x3-d=0.08')
+ 
+%kernel size 9x9
+ 
+medianFilt9s1 = medfilt2(noise3,[9 9]);
+medianFilt9s2 = medfilt2(noise4,[9 9]);
+medianFilt9s3 = medfilt2(noise5,[9 9]);
+figure,imagesc(medianFilt9s1),colorbar,colormap(gray),grid on,title('S&P-Filtered-median-9x9-d=0.01')
+figure,imagesc(medianFilt9s2),colorbar,colormap(gray),grid on,title('S&P-Filtered-median-9x9-d=0.05')
+figure,imagesc(medianFilt9s3),colorbar,colormap(gray),grid on,title('S&P-Filtered-median-9x9-d=0.08')
+ 
+%kernel size 15x15
+ 
+medianFilt15s1 = medfilt2(noise3,[15 15]);
+medianFilt15s2 = medfilt2(noise4,[15 15]);
+medianFilt15s3 = medfilt2(noise5,[15 15]);
+figure,imagesc(medianFilt15s1),colorbar,colormap(gray),grid on,title('S&P-Filtered-median-15x15-d=0.01')
+figure,imagesc(medianFilt15s2),colorbar,colormap(gray),grid on,title('S&P-Filtered-median-15x15-d=0.05')
+figure,imagesc(medianFilt15s3),colorbar,colormap(gray),grid on,title('S&P-Filtered-median-15x15-d=0.08')
+ 
+ 
+%% Salt and pepper noise filter using gaussian filter
+ 
+%kernel = 3x3
+ 
+gaussfilt3s1 = fspecial('gaussian',3,0.25);%3x3 matrix with SD = 0.25
+gaussfilt3s2 = fspecial('gaussian',3,0.5);%3x3 matrix with SD = 0.5
+img_gaussfilt3s1 = imfilter(noise3,gaussfilt3s1);%d= 0.01 SD = 0.25
+img_gaussfilt3s2 = imfilter(noise4,gaussfilt3s1);%d= 0.05 SD = 0.25
+img_gaussfilt3s3 = imfilter(noise5,gaussfilt3s1);%d= 0.08 SD = 0.25
+ 
+img_gaussfilt3s4 = imfilter(noise3,gaussfilt3s2);%d= 0.01 SD = 0.5
+img_gaussfilt3s5 = imfilter(noise4,gaussfilt3s2);%d= 0.05 SD = 0.5
+img_gaussfilt3s6 = imfilter(noise5,gaussfilt3s2);%d= 0.08 SD = 0.5
+ 
+figure,imagesc(img_gaussfilt3s1),colorbar,colormap(gray),grid on,title('S&P-d=0.01-Filtered-gaussian-3x3-SD=0.25')
+figure,imagesc(img_gaussfilt3s2),colorbar,colormap(gray),grid on,title('S&P-d=0.05-Filtered-gaussian-3x3-SD=0.25')
+figure,imagesc(img_gaussfilt3s3),colorbar,colormap(gray),grid on,title('S&P-d=0.08-Filtered-gaussian-3x3-SD=0.25')
+figure,imagesc(img_gaussfilt3s4),colorbar,colormap(gray),grid on,title('S&P-d=0.01-Filtered-gaussian-3x3-SD=0.5')
+figure,imagesc(img_gaussfilt3s5),colorbar,colormap(gray),grid on,title('S&P-d=0.05-Filtered-gaussian-3x3-SD=0.5')
+figure,imagesc(img_gaussfilt3s6),colorbar,colormap(gray),grid on,title('S&P-d=0.08-Filtered-gaussian-3x3-SD=0.5')
+ 
+%kernel = 9x9
+gaussfilt9s1 = fspecial('gaussian',9,0.25);%9x9 matrix with SD = 0.25
+gaussfilt9s2 = fspecial('gaussian',9,0.5);%9x9 matrix with SD = 0.5
+img_gaussfilt9s1 = imfilter(noise3,gaussfilt9s1);%d= 0.01 SD = 0.25
+img_gaussfilt9s2 = imfilter(noise4,gaussfilt9s1);%d= 0.05 SD = 0.25
+img_gaussfilt9s3 = imfilter(noise5,gaussfilt9s1);%d= 0.08 SD = 0.25
+ 
+img_gaussfilt9s4 = imfilter(noise3,gaussfilt9s2);%d= 0.01 SD = 0.5
+img_gaussfilt9s5 = imfilter(noise4,gaussfilt9s2);%d= 0.05 SD = 0.5
+img_gaussfilt9s6 = imfilter(noise5,gaussfilt9s2);%d= 0.08 SD = 0.5
+ 
+figure,imagesc(img_gaussfilt9s1),colorbar,colormap(gray),grid on,title('S&P-d=0.01-Filtered-gaussian-9x9-SD=0.25')
+figure,imagesc(img_gaussfilt9s2),colorbar,colormap(gray),grid on,title('S&P-d=0.05-Filtered-gaussian-9x9-SD=0.25')
+figure,imagesc(img_gaussfilt9s3),colorbar,colormap(gray),grid on,title('S&P-d=0.08-Filtered-gaussian-9x9-SD=0.25')
+figure,imagesc(img_gaussfilt9s4),colorbar,colormap(gray),grid on,title('S&P-d=0.01-Filtered-gaussian-9x9-SD=0.5')
+figure,imagesc(img_gaussfilt9s5),colorbar,colormap(gray),grid on,title('S&P-d=0.05-Filtered-gaussian-9x9-SD=0.5')
+figure,imagesc(img_gaussfilt9s6),colorbar,colormap(gray),grid on,title('S&P-d=0.08-Filtered-gaussian-9x9-SD=0.5')
+ 
+ 
+%kernel = 15x15
+gaussfilt15s1 = fspecial('gaussian',15,0.25);%15x15 matrix with SD = 0.25
+gaussfilt15s2 = fspecial('gaussian',15,0.05);%15x15 matrix with SD = 0.05
+img_gaussfilt15s1 = imfilter(noise3,gaussfilt15s1);%d= 0.01 SD = 0.25
+img_gaussfilt15s2 = imfilter(noise4,gaussfilt15s1);%d= 0.05 SD = 0.25
+img_gaussfilt15s3 = imfilter(noise5,gaussfilt15s1);%d= 0.08 SD = 0.25
+ 
+img_gaussfilt15s4 = imfilter(noise3,gaussfilt15s2);%d= 0.01 SD = 0.5
+img_gaussfilt15s5 = imfilter(noise4,gaussfilt15s2);%d= 0.05 SD = 0.5
+img_gaussfilt15s6 = imfilter(noise5,gaussfilt15s2);%d= 0.08 SD = 0.5
+ 
+figure,imagesc(img_gaussfilt15s1),colorbar,colormap(gray),grid on,title('S&P-d=0.01-Filtered-gaussian-15x15-SD=0.25')
+figure,imagesc(img_gaussfilt15s2),colorbar,colormap(gray),grid on,title('S&P-d=0.05-Filtered-gaussian-15x15-SD=0.25')
+figure,imagesc(img_gaussfilt15s3),colorbar,colormap(gray),grid on,title('S&P-d=0.08-Filtered-gaussian-15x15-SD=0.25')
+figure,imagesc(img_gaussfilt15s4),colorbar,colormap(gray),grid on,title('S&P-d=0.01-Filtered-gaussian-15x15-SD=0.5')
+figure,imagesc(img_gaussfilt15s5),colorbar,colormap(gray),grid on,title('S&P-d=0.05-Filtered-gaussian-15x15-SD=0.5')
+figure,imagesc(img_gaussfilt15s6),colorbar,colormap(gray),grid on,title('S&P-d=0.08-Filtered-gaussian-15x15-SD=0.5')
+ 
+%% Peak SNR value to measure sharpness
+
+peaksnr3x31 = psnr(img_gaussfilt3s6,noise5)
+peaksnr9x91 = psnr(img_gaussfilt9s6,noise5)
+peaksnr15x151 = psnr(img_gaussfilt15s6,noise5)
